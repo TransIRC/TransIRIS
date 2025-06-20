@@ -1,4 +1,4 @@
-name: Build APK on Tag
+name: Build APK on Latest IRIS Tag
 
 on:
   repository_dispatch:
@@ -14,15 +14,17 @@ jobs:
           repository: TransIRC/IRIS
           token: ${{ secrets.PAT }}
           path: iris-src
-      
-      - name: Checkout latest tag in IRIS
+
+      - name: Checkout latest tag in IRIS and export as LATEST_TAG
+        id: iris_tag
         run: |
           cd iris-src
           git fetch --tags
           latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          git checkout $latest_tag
+          git checkout "$latest_tag"
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
           echo "Checked out $latest_tag"
-          
+
       - name: Replace config.dart with TransIRIS version
         run: |
           cp ./config.dart ./iris-src/iris-app/iris/lib/config.dart
@@ -45,8 +47,8 @@ jobs:
       - name: Create GitHub Release and Upload APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.client_payload.tag }}
-          name: ${{ github.event.client_payload.tag }}
+          tag_name: ${{ env.LATEST_TAG }}
+          name: ${{ env.LATEST_TAG }}
           files: app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
