@@ -1,0 +1,38 @@
+name: Build APK on Tag
+
+on:
+  repository_dispatch:
+    types: [build_apk]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout IRIS repo at tagged commit
+        uses: actions/checkout@v4
+        with:
+          repository: TransIRC/IRIS
+          ref: ${{ github.event.client_payload.tag }}
+          token: ${{ secrets.PAT }}
+          path: iris-src
+
+      - name: Replace config.dart with TransIRIS version
+        run: |
+          cp ./config.dart ./iris-src/iris-app/iris/lib/config.dart
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "stable"
+
+      - name: Build APK
+        run: |
+          cd iris-src/iris-app/iris
+          flutter pub get
+          flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: iris-src/iris-app/iris/build/app/outputs/flutter-apk/app-release.apk
