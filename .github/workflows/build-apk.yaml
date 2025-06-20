@@ -8,13 +8,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout IRIS repo at tagged commit
+      - name: Checkout IRIS repo (default branch)
         uses: actions/checkout@v4
         with:
           repository: TransIRC/IRIS
-          ref: ${{ github.event.client_payload.tag }}
           token: ${{ secrets.PAT }}
           path: iris-src
+      
+      - name: Checkout latest tag in IRIS
+        run: |
+          cd iris-src
+          git fetch --tags
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          git checkout $latest_tag
+          echo "Checked out $latest_tag"
           
       - name: Replace config.dart with TransIRIS version
         run: |
