@@ -31,8 +31,15 @@ jobs:
           flutter pub get
           flutter build apk --release
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+      - name: Copy APK to workspace root
+        run: |
+          cp iris-src/iris-app/iris/build/app/outputs/flutter-apk/app-release.apk .
+
+      - name: Create GitHub Release and Upload APK
+        uses: softprops/action-gh-release@v2
         with:
-          name: app-release.apk
-          path: iris-src/iris-app/iris/build/app/outputs/flutter-apk/app-release.apk
+          tag_name: ${{ github.event.client_payload.tag }}
+          name: ${{ github.event.client_payload.tag }}
+          files: app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
