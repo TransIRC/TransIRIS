@@ -8,6 +8,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout TransIRIS repo
+        uses: actions/checkout@v4
+        with:
+          path: transiris-src
+
       - name: Checkout IRIS repo (default branch)
         uses: actions/checkout@v4
         with:
@@ -27,7 +32,7 @@ jobs:
 
       - name: Replace config.dart with TransIRIS version
         run: |
-          cp ./config.dart ./iris-src/iris-app/iris/lib/config.dart
+          cp ./transiris-src/config.dart ./iris-src/iris-app/iris/lib/config.dart
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
