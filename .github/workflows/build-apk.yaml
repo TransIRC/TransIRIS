@@ -104,9 +104,14 @@ jobs:
         run: |
           echo "${{ secrets.TRANSIRIS_KEYSTORE }}" | base64 -d > ./iris-src/iris-app/iris/android/app/release.keystore
 
-      - name: Copy key.properties from repo root
+      - name: Create key.properties with secrets
         run: |
-          cp ./transiris-src/key.properties ./iris-src/iris-app/iris/android/key.properties
+          cat > ./iris-src/iris-app/iris/android/key.properties <<EOF
+          storePassword=${{ secrets.STORE_KEY_PASSWORD }}
+          keyPassword=${{ secrets.STORE_KEY_PASSWORD }}
+          keyAlias=TransIRIS
+          storeFile=release.keystore
+          EOF
       # --- END: Keystore and key.properties Setup ---
 
       - name: Set up Flutter
