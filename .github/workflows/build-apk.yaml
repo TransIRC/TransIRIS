@@ -99,6 +99,16 @@ jobs:
           }
           EOF
 
+      # --- BEGIN: Keystore and key.properties Setup ---
+      - name: Decode release keystore from TRANSIRIS_KEYSTORE secret
+        run: |
+          echo "${{ secrets.TRANSIRIS_KEYSTORE }}" | base64 -d > ./iris-src/iris-app/iris/android/app/release.keystore
+
+      - name: Copy key.properties from repo root
+        run: |
+          cp ./transiris-src/key.properties ./iris-src/iris-app/iris/android/key.properties
+      # --- END: Keystore and key.properties Setup ---
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
