@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04   # ← Use Ubuntu 22.04 for lower glibc compatibility!
     steps:
       - name: Checkout TransIRIS repo
         uses: actions/checkout@v4
