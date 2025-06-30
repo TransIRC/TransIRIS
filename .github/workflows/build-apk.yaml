@@ -129,11 +129,32 @@ jobs:
         run: |
           cp iris-src/iris-app/iris/build/app/outputs/flutter-apk/app-release.apk .
 
-      - name: Create GitHub Release and Upload APK
+      # --- NEW: Linux build and artifact copy ---
+      - name: Build Linux release
+        run: |
+          cd iris-src/iris-app/iris
+          flutter build linux --release
+
+      - name: Copy Linux build to workspace root
+        run: |
+          cp -r iris-src/iris-app/iris/build/linux/x64/release/bundle ./linux-build
+
+      # You may choose to zip it for easier release upload
+      - name: Zip Linux build
+        run: |
+          cd ./linux-build
+          zip -r ../app-linux.zip .
+          cd ..
+
+      # --- END Linux build ---
+
+      - name: Create GitHub Release and Upload APK and Linux build
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.LATEST_TAG }}
           name: ${{ env.LATEST_TAG }}
-          files: app-release.apk
+          files: |
+            app-release.apk
+            app-linux.zip
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
